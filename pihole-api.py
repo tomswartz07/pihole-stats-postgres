@@ -26,9 +26,9 @@ def connect_to_db(db, user, host, password, port, appname, schema):
         db, user, host, password, port, appname, schema
         )
     try:
-        print("Connecting to db")
         return psycopg2.connect(connection)
     except psycopg2.Error as e:
+        print("Error connecting to db")
         print(e.pgcode)
         print(e.pgerror)
         return None
@@ -107,14 +107,6 @@ privacy_level = str(parsed_json['privacy_level'])
 status_level = str(parsed_json['status'])
 gravity_last_updated = str(parsed_json['gravity_last_updated']['absolute'])
 
-pihole = 'DNS-Queries: ' + str(dns_queries_today) + '\n'  +\
-        'Ads blocked: ' + str(ads_blocked_today) + '\n' +\
-        'Percent Blocked: ' + str(ads_percentage_today) + '\n' +\
-        'Devices: ' + str(unique_clients)
-print(pihole)
-
-#print(parsed_json.keys())
-
 insert_statement = "INSERT INTO {}.{} ".format(dbschema, dbtable)
 insert_statement += " (domains_being_blocked,"
 insert_statement += " dns_queries_today,"
@@ -154,8 +146,6 @@ insert_statement += " '" + status_level + "',"
 insert_statement += " '" + str(datetime.datetime.now()) + "',"
 insert_statement += " to_timestamp('" + gravity_last_updated + "'))"
 insert_statement += " ON CONFLICT DO NOTHING;"
-
-print(insert_statement)
 
 client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
 commit_sql(client, insert_statement)
