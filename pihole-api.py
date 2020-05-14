@@ -6,6 +6,7 @@ Grab stats from PiHole and put em someplace else
 import json
 from contextlib import closing
 import datetime
+import socket
 from requests import get
 from requests.exceptions import RequestException
 import psycopg2
@@ -19,6 +20,7 @@ dbport = ""
 dbuser = ""
 dbpassword = ""
 dbappname = "PiHole Stats Aggregator"
+hostname = socket.gethostname()
 
 def connect_to_db(db, user, host, password, port, appname, schema):
     "Handle connecting to db"
@@ -125,6 +127,7 @@ insert_statement += " reply_IP,"
 insert_statement += " privacy_level,"
 insert_statement += " status_level,"
 insert_statement += " time,"
+insert_statement += " hostname,"
 insert_statement += " gravity_last_updated)"
 insert_statement += "VALUES"
 insert_statement += " ('" + domains_being_blocked + "',"
@@ -144,6 +147,7 @@ insert_statement += " '" + reply_IP + "',"
 insert_statement += " '" + privacy_level + "',"
 insert_statement += " '" + status_level + "',"
 insert_statement += " '" + str(datetime.datetime.now()) + "',"
+insert_statement += " '" + hostname + "',"
 insert_statement += " to_timestamp('" + gravity_last_updated + "'))"
 insert_statement += " ON CONFLICT DO NOTHING;"
 
