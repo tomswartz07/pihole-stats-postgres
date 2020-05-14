@@ -20,6 +20,7 @@ dbport = ""
 dbuser = ""
 dbpassword = ""
 dbappname = "PiHole Stats Aggregator"
+piholehost = "https://hostname.net" # Do not add the API path, just the address of PiHole
 hostname = socket.gethostname()
 
 def connect_to_db(db, user, host, password, port, appname, schema):
@@ -88,7 +89,7 @@ def log_error(e):
 #      "minutes": "42"
 #    }
 
-raw_data = simple_get('https://pihole.tswartz.net/admin/api.php')
+raw_data = simple_get(piholehost + '/admin/api.php')
 parsed_json = json.loads(raw_data)
 
 domains_being_blocked = str(parsed_json['domains_being_blocked'])
