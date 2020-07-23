@@ -42,7 +42,6 @@ SET row_security = off;
 
 CREATE SCHEMA pihole;
 
-
 ALTER SCHEMA pihole OWNER TO postgres;
 
 SET default_tablespace = '';
@@ -56,9 +55,13 @@ CREATE SEQUENCE pihole.id_seq
 
 ALTER TABLE pihole.id_seq OWNER TO postgres;
 
+--
+-- Name: piholestats; Type: TABLE; Schema: pihole; Owner: -
+--
+
 CREATE TABLE pihole.piholestats (
     id bigint DEFAULT nextval('pihole.id_seq'::regclass) NOT NULL,
-    time timestamp with time zone NOT NULL,
+    "time" timestamp with time zone NOT NULL,
     domains_being_blocked integer NOT NULL,
     dns_queries_today integer NOT NULL,
     ads_blocked_today integer NOT NULL,
@@ -69,24 +72,41 @@ CREATE TABLE pihole.piholestats (
     clients_ever_seen integer NOT NULL,
     unique_clients integer NOT NULL,
     dns_queries_all_types integer NOT NULL,
-    reply_NODATA integer NOT NULL,
-    reply_NXDOMAIN integer NOT NULL,
-    reply_CNAME integer NOT NULL,
-    reply_IP integer NOT NULL,
+    reply_nodata integer NOT NULL,
+    reply_nxdomain integer NOT NULL,
+    reply_cname integer NOT NULL,
+    reply_ip integer NOT NULL,
     privacy_level integer,
     status_level text,
-    gravity_last_updated timestamp
+    gravity_last_updated timestamp without time zone,
+    hostname text
 );
 
-ALTER TABLE pihole.piholestats OWNER TO postgres;
+--
+-- Name: piholestats pihole_stats_pkey; Type: CONSTRAINT; Schema: pihole; Owner: -
+--
 
 ALTER TABLE ONLY pihole.piholestats
     ADD CONSTRAINT pihole_stats_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY pihole.piholestats
-    ADD CONSTRAINT unique_time UNIQUE (time);
+--
+-- Name: piholestats unique_time; Type: CONSTRAINT; Schema: pihole; Owner: -
+--
 
-CREATE INDEX idx_time ON pihole.piholestats USING btree (time) INCLUDE (time);
+ALTER TABLE ONLY pihole.piholestats
+    ADD CONSTRAINT unique_time UNIQUE ("time");
+
+--
+-- Name: idx_hostname; Type: INDEX; Schema: pihole; Owner: -
+--
+
+CREATE INDEX idx_hostname ON pihole.piholestats USING btree (hostname);
+
+--
+-- Name: idx_time; Type: INDEX; Schema: pihole; Owner: -
+--
+
+CREATE INDEX idx_time ON pihole.piholestats USING btree ("time") INCLUDE ("time");
 
 GRANT ALL ON SCHEMA pihole TO postgres;
 GRANT USAGE ON SCHEMA pihole TO grafana;
