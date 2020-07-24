@@ -104,9 +104,11 @@ if discrete_data is not None:
     for time in domains:
         insert_statement2 = "INSERT INTO {}.{} ".format(dbschema, discretetable)
         insert_statement2 += "(domains,"
+        insert_statement2 += " hostname,"
         insert_statement2 += " epoch) "
         insert_statement2 += "VALUES"
         insert_statement2 += " ('" + str(domains[time]) + "',"
+        insert_statement2 += " '" + hostname + "',"
         insert_statement2 += " to_timestamp('" + time + "'))"
         insert_statement2 += " ON CONFLICT (epoch) DO"
         insert_statement2 += " UPDATE SET"
@@ -117,9 +119,11 @@ if discrete_data is not None:
     for time in ads:
         insert_statement3 = "INSERT INTO {}.{} ".format(dbschema, discretetable)
         insert_statement3 += "(ads,"
+        insert_statement3 += " hostname,"
         insert_statement3 += " epoch) "
         insert_statement3 += "VALUES"
         insert_statement3 += " ('" + str(ads[time]) + "',"
+        insert_statement3 += " '" + hostname + "',"
         insert_statement3 += " to_timestamp('" + time + "'))"
         insert_statement3 += " ON CONFLICT (epoch) DO"
         insert_statement3 += " UPDATE SET"

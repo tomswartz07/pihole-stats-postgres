@@ -62,9 +62,9 @@ ALTER TABLE pihole.id_seq OWNER TO postgres;
 CREATE TABLE pihole.shortdata (
     epoch timestamp without time zone NOT NULL,
     domains integer,
-    ads integer
+    ads integer,
+    hostname text
 );
-
 
 --
 -- Name: shortdata shortdata_pkey; Type: CONSTRAINT; Schema: pihole; Owner: -
@@ -72,7 +72,6 @@ CREATE TABLE pihole.shortdata (
 
 ALTER TABLE ONLY pihole.shortdata
     ADD CONSTRAINT shortdata_pkey PRIMARY KEY (epoch);
-
 
 --
 -- Name: piholestats; Type: TABLE; Schema: pihole; Owner: -
@@ -132,6 +131,7 @@ GRANT USAGE ON SCHEMA pihole TO grafana;
 
 GRANT ALL ON TABLE pihole.piholestats TO postgres;
 GRANT SELECT ON TABLE pihole.piholestats TO grafana;
+GRANT SELECT ON TABLE pihole.shortdata TO grafana;
 
 --
 -- PostgreSQL database dump complete
