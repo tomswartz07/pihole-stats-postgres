@@ -43,6 +43,7 @@ def commit_sql(conn, sql_statement):
         cur = conn.cursor()
         cur.execute(sql_statement)
         conn.commit()
+        cur.close()
         return ['ok', 'success', 'OK']
     except Exception as e:
         print("Issue detected: ", e)
