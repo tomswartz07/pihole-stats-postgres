@@ -59,19 +59,36 @@ ALTER TABLE pihole.id_seq OWNER TO postgres;
 -- Name: shortdata; Type: TABLE; Schema: pihole; Owner: -
 --
 
+
 CREATE TABLE pihole.shortdata (
-    epoch timestamp without time zone NOT NULL,
+    epoch timestamp with time zone NOT NULL,
     domains integer,
     ads integer,
-    hostname text
+    hostname text NOT NULL
 );
+
 
 --
 -- Name: shortdata shortdata_pkey; Type: CONSTRAINT; Schema: pihole; Owner: -
 --
 
 ALTER TABLE ONLY pihole.shortdata
-    ADD CONSTRAINT shortdata_pkey PRIMARY KEY (epoch);
+    ADD CONSTRAINT shortdata_pkey PRIMARY KEY (epoch, hostname);
+
+
+--
+-- Name: idx_shortdata_hostname; Type: INDEX; Schema: pihole; Owner: -
+--
+
+CREATE INDEX idx_shortdata_hostname ON pihole.shortdata USING btree (hostname);
+
+
+--
+-- Name: idx_shortdata_time; Type: INDEX; Schema: pihole; Owner: -
+--
+
+CREATE INDEX idx_shortdata_time ON pihole.shortdata USING btree (epoch DESC NULLS LAST);
+
 
 --
 -- Name: piholestats; Type: TABLE; Schema: pihole; Owner: -
@@ -100,12 +117,14 @@ CREATE TABLE pihole.piholestats (
     hostname text
 );
 
+
 --
 -- Name: piholestats pihole_stats_pkey; Type: CONSTRAINT; Schema: pihole; Owner: -
 --
 
 ALTER TABLE ONLY pihole.piholestats
     ADD CONSTRAINT pihole_stats_pkey PRIMARY KEY (id);
+
 
 --
 -- Name: piholestats unique_time; Type: CONSTRAINT; Schema: pihole; Owner: -
@@ -114,11 +133,13 @@ ALTER TABLE ONLY pihole.piholestats
 ALTER TABLE ONLY pihole.piholestats
     ADD CONSTRAINT unique_time UNIQUE ("time");
 
+
 --
 -- Name: idx_hostname; Type: INDEX; Schema: pihole; Owner: -
 --
 
 CREATE INDEX idx_hostname ON pihole.piholestats USING btree (hostname);
+
 
 --
 -- Name: idx_time; Type: INDEX; Schema: pihole; Owner: -
