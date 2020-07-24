@@ -94,8 +94,71 @@ def log_error(e):
 raw_data = simple_get(piholehost + '/admin/api.php')
 if raw_data is not None:
     parsed_json = json.loads(raw_data)
+    domains_being_blocked = str(parsed_json['domains_being_blocked'])
+    dns_queries_today = str(parsed_json['dns_queries_today'])
+    ads_blocked_today = str(parsed_json['ads_blocked_today'])
+    ads_percentage_today = str(parsed_json['ads_percentage_today'])
+    unique_domains = str(parsed_json['unique_domains'])
+    domains_forwarded = str(parsed_json['queries_forwarded'])
+    queries_cached = str(parsed_json['queries_cached'])
+    clients_ever_seen = str(parsed_json['clients_ever_seen'])
+    unique_clients = str(parsed_json['unique_clients'])
+    dns_queries_all_types = str(parsed_json['dns_queries_all_types'])
+    reply_NODATA = str(parsed_json['reply_NODATA'])
+    reply_NXDOMAIN = str(parsed_json['reply_NXDOMAIN'])
+    reply_CNAME = str(parsed_json['reply_CNAME'])
+    reply_IP = str(parsed_json['reply_IP'])
+    privacy_level = str(parsed_json['privacy_level'])
+    status_level = str(parsed_json['status'])
+    gravity_last_updated = str(parsed_json['gravity_last_updated']['absolute'])
+
+    insert_statement = "INSERT INTO {}.{} ".format(dbschema, statstable)
+    insert_statement += " (domains_being_blocked,"
+    insert_statement += " dns_queries_today,"
+    insert_statement += " ads_blocked_today,"
+    insert_statement += " ads_percentage_today,"
+    insert_statement += " unique_domains,"
+    insert_statement += " domains_forwarded,"
+    insert_statement += " queries_cached,"
+    insert_statement += " clients_ever_seen,"
+    insert_statement += " unique_clients,"
+    insert_statement += " dns_queries_all_types,"
+    insert_statement += " reply_NODATA,"
+    insert_statement += " reply_NXDOMAIN,"
+    insert_statement += " reply_CNAME,"
+    insert_statement += " reply_IP,"
+    insert_statement += " privacy_level,"
+    insert_statement += " status_level,"
+    insert_statement += " time,"
+    insert_statement += " hostname,"
+    insert_statement += " gravity_last_updated)"
+    insert_statement += "VALUES"
+    insert_statement += " ('" + domains_being_blocked + "',"
+    insert_statement += " '" + dns_queries_today + "',"
+    insert_statement += " '" + ads_blocked_today + "',"
+    insert_statement += " '" + ads_percentage_today + "',"
+    insert_statement += " '" + unique_domains + "',"
+    insert_statement += " '" + domains_forwarded + "',"
+    insert_statement += " '" + queries_cached + "',"
+    insert_statement += " '" + clients_ever_seen + "',"
+    insert_statement += " '" + unique_clients + "',"
+    insert_statement += " '" + dns_queries_all_types + "',"
+    insert_statement += " '" + reply_NODATA + "',"
+    insert_statement += " '" + reply_NXDOMAIN + "',"
+    insert_statement += " '" + reply_CNAME + "',"
+    insert_statement += " '" + reply_IP + "',"
+    insert_statement += " '" + privacy_level + "',"
+    insert_statement += " '" + status_level + "',"
+    insert_statement += " '" + str(datetime.datetime.now()) + "',"
+    insert_statement += " '" + hostname + "',"
+    insert_statement += " to_timestamp('" + gravity_last_updated + "'))"
+    insert_statement += " ON CONFLICT DO NOTHING;"
+
+    #print(insert_statement)
+    client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
+    commit_sql(client, insert_statement)
 else:
-    pass
+    print("Bad connection or no data, skipping")
 
 discrete_data = simple_get(piholehost + '/admin/api.php?overTimeData10mins')
 if discrete_data is not None:
@@ -133,67 +196,4 @@ if discrete_data is not None:
         client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
         commit_sql(client, insert_statement3)
 else:
-    pass
-
-domains_being_blocked = str(parsed_json['domains_being_blocked'])
-dns_queries_today = str(parsed_json['dns_queries_today'])
-ads_blocked_today = str(parsed_json['ads_blocked_today'])
-ads_percentage_today = str(parsed_json['ads_percentage_today'])
-unique_domains = str(parsed_json['unique_domains'])
-domains_forwarded = str(parsed_json['queries_forwarded'])
-queries_cached = str(parsed_json['queries_cached'])
-clients_ever_seen = str(parsed_json['clients_ever_seen'])
-unique_clients = str(parsed_json['unique_clients'])
-dns_queries_all_types = str(parsed_json['dns_queries_all_types'])
-reply_NODATA = str(parsed_json['reply_NODATA'])
-reply_NXDOMAIN = str(parsed_json['reply_NXDOMAIN'])
-reply_CNAME = str(parsed_json['reply_CNAME'])
-reply_IP = str(parsed_json['reply_IP'])
-privacy_level = str(parsed_json['privacy_level'])
-status_level = str(parsed_json['status'])
-gravity_last_updated = str(parsed_json['gravity_last_updated']['absolute'])
-
-insert_statement = "INSERT INTO {}.{} ".format(dbschema, statstable)
-insert_statement += " (domains_being_blocked,"
-insert_statement += " dns_queries_today,"
-insert_statement += " ads_blocked_today,"
-insert_statement += " ads_percentage_today,"
-insert_statement += " unique_domains,"
-insert_statement += " domains_forwarded,"
-insert_statement += " queries_cached,"
-insert_statement += " clients_ever_seen,"
-insert_statement += " unique_clients,"
-insert_statement += " dns_queries_all_types,"
-insert_statement += " reply_NODATA,"
-insert_statement += " reply_NXDOMAIN,"
-insert_statement += " reply_CNAME,"
-insert_statement += " reply_IP,"
-insert_statement += " privacy_level,"
-insert_statement += " status_level,"
-insert_statement += " time,"
-insert_statement += " hostname,"
-insert_statement += " gravity_last_updated)"
-insert_statement += "VALUES"
-insert_statement += " ('" + domains_being_blocked + "',"
-insert_statement += " '" + dns_queries_today + "',"
-insert_statement += " '" + ads_blocked_today + "',"
-insert_statement += " '" + ads_percentage_today + "',"
-insert_statement += " '" + unique_domains + "',"
-insert_statement += " '" + domains_forwarded + "',"
-insert_statement += " '" + queries_cached + "',"
-insert_statement += " '" + clients_ever_seen + "',"
-insert_statement += " '" + unique_clients + "',"
-insert_statement += " '" + dns_queries_all_types + "',"
-insert_statement += " '" + reply_NODATA + "',"
-insert_statement += " '" + reply_NXDOMAIN + "',"
-insert_statement += " '" + reply_CNAME + "',"
-insert_statement += " '" + reply_IP + "',"
-insert_statement += " '" + privacy_level + "',"
-insert_statement += " '" + status_level + "',"
-insert_statement += " '" + str(datetime.datetime.now()) + "',"
-insert_statement += " '" + hostname + "',"
-insert_statement += " to_timestamp('" + gravity_last_updated + "'))"
-insert_statement += " ON CONFLICT DO NOTHING;"
-
-client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
-commit_sql(client, insert_statement)
+    print("Bad connection or no data, skipping")
