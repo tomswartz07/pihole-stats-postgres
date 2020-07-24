@@ -14,7 +14,8 @@ import psycopg2
 # Database params
 dbname = "pihole"
 dbschema = "pihole"
-dbtable = "piholestats"
+statstable = "piholestats"
+discretetable = "shortdata"
 dbhost = ""
 dbport = ""
 dbuser = ""
@@ -69,8 +70,8 @@ def is_good_response(resp):
     """
     content_type = resp.headers['Content-Type'].lower()
     return (resp.status_code == 200
-            and content_type is not None)
-            #and content_type.find('html') > -1)
+            #and content_type is not None)
+            and content_type.find('application/json') > -1)
 
 def log_error(e):
     """
@@ -90,7 +91,44 @@ def log_error(e):
 #    }
 
 raw_data = simple_get(piholehost + '/admin/api.php')
-parsed_json = json.loads(raw_data)
+if raw_data is not None:
+    parsed_json = json.loads(raw_data)
+else:
+    pass
+
+discrete_data = simple_get(piholehost + '/admin/api.php?overTimeData10mins')
+if discrete_data is not None:
+    short_json = json.loads(discrete_data)
+    domains = short_json['domains_over_time']
+    ads = short_json['ads_over_time']
+    for time in domains:
+        insert_statement2 = "INSERT INTO {}.{} ".format(dbschema, discretetable)
+        insert_statement2 += "(domains,"
+        insert_statement2 += " epoch) "
+        insert_statement2 += "VALUES"
+        insert_statement2 += " ('" + str(domains[time]) + "',"
+        insert_statement2 += " to_timestamp('" + time + "'))"
+        insert_statement2 += " ON CONFLICT (epoch) DO"
+        insert_statement2 += " UPDATE SET"
+        insert_statement2 += " domains ="
+        insert_statement2 += " EXCLUDED.domains;"
+        client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
+        commit_sql(client, insert_statement2)
+    for time in ads:
+        insert_statement3 = "INSERT INTO {}.{} ".format(dbschema, discretetable)
+        insert_statement3 += "(ads,"
+        insert_statement3 += " epoch) "
+        insert_statement3 += "VALUES"
+        insert_statement3 += " ('" + str(ads[time]) + "',"
+        insert_statement3 += " to_timestamp('" + time + "'))"
+        insert_statement3 += " ON CONFLICT (epoch) DO"
+        insert_statement3 += " UPDATE SET"
+        insert_statement3 += " ads ="
+        insert_statement3 += " EXCLUDED.ads;"
+        client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
+        commit_sql(client, insert_statement3)
+else:
+    pass
 
 domains_being_blocked = str(parsed_json['domains_being_blocked'])
 dns_queries_today = str(parsed_json['dns_queries_today'])
@@ -110,7 +148,7 @@ privacy_level = str(parsed_json['privacy_level'])
 status_level = str(parsed_json['status'])
 gravity_last_updated = str(parsed_json['gravity_last_updated']['absolute'])
 
-insert_statement = "INSERT INTO {}.{} ".format(dbschema, dbtable)
+insert_statement = "INSERT INTO {}.{} ".format(dbschema, statstable)
 insert_statement += " (domains_being_blocked,"
 insert_statement += " dns_queries_today,"
 insert_statement += " ads_blocked_today,"

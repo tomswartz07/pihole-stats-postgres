@@ -56,6 +56,25 @@ CREATE SEQUENCE pihole.id_seq
 ALTER TABLE pihole.id_seq OWNER TO postgres;
 
 --
+-- Name: shortdata; Type: TABLE; Schema: pihole; Owner: -
+--
+
+CREATE TABLE pihole.shortdata (
+    epoch timestamp without time zone NOT NULL,
+    domains integer,
+    ads integer
+);
+
+
+--
+-- Name: shortdata shortdata_pkey; Type: CONSTRAINT; Schema: pihole; Owner: -
+--
+
+ALTER TABLE ONLY pihole.shortdata
+    ADD CONSTRAINT shortdata_pkey PRIMARY KEY (epoch);
+
+
+--
 -- Name: piholestats; Type: TABLE; Schema: pihole; Owner: -
 --
 
