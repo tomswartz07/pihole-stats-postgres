@@ -165,6 +165,7 @@ if discrete_data is not None:
     short_json = json.loads(discrete_data)
     domains = short_json['domains_over_time']
     ads = short_json['ads_over_time']
+    rollup_statement = ""
     for time in domains:
         insert_statement2 = "INSERT INTO {}.{} ".format(dbschema, discretetable)
         insert_statement2 += "(domains,"
@@ -177,9 +178,8 @@ if discrete_data is not None:
         insert_statement2 += " ON CONFLICT (epoch) DO"
         insert_statement2 += " UPDATE SET"
         insert_statement2 += " domains ="
-        insert_statement2 += " EXCLUDED.domains;"
-        client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
-        commit_sql(client, insert_statement2)
+        insert_statement2 += " EXCLUDED.domains; "
+        rollup_statement += insert_statement2
     for time in ads:
         insert_statement3 = "INSERT INTO {}.{} ".format(dbschema, discretetable)
         insert_statement3 += "(ads,"
@@ -192,8 +192,9 @@ if discrete_data is not None:
         insert_statement3 += " ON CONFLICT (epoch) DO"
         insert_statement3 += " UPDATE SET"
         insert_statement3 += " ads ="
-        insert_statement3 += " EXCLUDED.ads;"
-        client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
-        commit_sql(client, insert_statement3)
+        insert_statement3 += " EXCLUDED.ads; "
+        rollup_statement += insert_statement3
+    client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
+    commit_sql(client, rollup_statement)
 else:
     print("Bad connection or no data, skipping")
