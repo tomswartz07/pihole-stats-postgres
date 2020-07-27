@@ -170,9 +170,7 @@ if discrete_data is not None:
         insert_statement2 += " ON CONFLICT ON CONSTRAINT shortdata_pkey DO"
         insert_statement2 += " UPDATE SET"
         insert_statement2 += " domains ="
-        insert_statement2 += " EXCLUDED.domains"
-        insert_statement2 += " WHERE"
-        insert_statement2 += " {}.{}.domains != EXCLUDED.domains; ".format(dbschema, discretetable)
+        insert_statement2 += " EXCLUDED.domains; "
         rollup_statement += insert_statement2
     for time in ads:
         insert_statement3 = "INSERT INTO {}.{} ".format(dbschema, discretetable)
@@ -186,9 +184,7 @@ if discrete_data is not None:
         insert_statement3 += " ON CONFLICT ON CONSTRAINT shortdata_pkey DO"
         insert_statement3 += " UPDATE SET"
         insert_statement3 += " ads ="
-        insert_statement3 += " EXCLUDED.ads"
-        insert_statement3 += " WHERE"
-        insert_statement3 += " {}.{}.ads != EXCLUDED.ads; ".format(dbschema, discretetable)
+        insert_statement3 += " EXCLUDED.ads; "
         rollup_statement += insert_statement3
     commit_data_statement += rollup_statement
 else:
