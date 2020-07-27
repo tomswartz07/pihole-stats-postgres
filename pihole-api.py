@@ -82,16 +82,11 @@ def log_error(e):
     """
     print(e)
 
-#  "gravity_last_updated": {
-#    "file_exists": true,
-#    "absolute": 1588491735,
-#    "relative": {
-#      "days": "0",
-#      "hours": "14",
-#      "minutes": "42"
-#    }
-
 raw_data = simple_get(piholehost + '/admin/api.php')
+
+# Init empty string for single connection/transaction
+commit_data_statement = ""
+
 if raw_data is not None:
     parsed_json = json.loads(raw_data)
     domains_being_blocked = str(parsed_json['domains_being_blocked'])
@@ -153,10 +148,7 @@ if raw_data is not None:
     insert_statement += " '" + hostname + "',"
     insert_statement += " to_timestamp('" + gravity_last_updated + "'))"
     insert_statement += " ON CONFLICT DO NOTHING;"
-
-    #print(insert_statement)
-    client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
-    commit_sql(client, insert_statement)
+    commit_data_statement += insert_statement
 else:
     print("Bad connection or no data, skipping")
 
@@ -194,7 +186,9 @@ if discrete_data is not None:
         insert_statement3 += " ads ="
         insert_statement3 += " EXCLUDED.ads; "
         rollup_statement += insert_statement3
-    client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
-    commit_sql(client, rollup_statement)
+    commit_data_statement += rollup_statement
 else:
     print("Bad connection or no data, skipping")
+
+client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
+commit_sql(client, commit_data_statement)
