@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# pylint: disable=C0301,C0103
 """
 Grab stats from PiHole and put em someplace else
 """
