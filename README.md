@@ -1,5 +1,7 @@
 # PiHole PostgreSQL Exporter
 
+![CodeQL](https://github.com/tomswartz07/pihole-stats-postgres/workflows/CodeQL/badge.svg)
+
 Export your PiHole stats to Postgres for better, longer retention of your data.
 
 
