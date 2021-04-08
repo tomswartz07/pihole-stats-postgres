@@ -23,12 +23,13 @@ dbuser = ""
 dbpassword = ""
 dbappname = "PiHole Stats Aggregator"
 piholehost = "https://hostname.net" # Do not add the API path, just the address of PiHole
+sslmode = "require"
 hostname = socket.gethostname()
 
-def connect_to_db(db, user, host, password, port, appname, schema):
+def connect_to_db(db, user, host, password, port, appname, schema, ssl_mode):
     "Handle connecting to db"
-    connection = "dbname='%s' user='%s' host='%s' password='%s' port='%s' application_name='%s' options='-csearch_path=%s'" % (
-        db, user, host, password, port, appname, schema
+    connection = "dbname='%s' user='%s' host='%s' password='%s' port='%s' application_name='%s' options='-csearch_path=%s' sslmode='%s'" % (
+        db, user, host, password, port, appname, schema, ssl_mode
         )
     try:
         return psycopg2.connect(connection)
@@ -199,5 +200,5 @@ if discrete_data is not None:
 else:
     print("Bad connection or no data, skipping")
 
-client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema)
+client = connect_to_db(dbname, dbuser, dbhost, dbpassword, dbport, dbappname, dbschema, sslmode)
 commit_sql(client, commit_data_statement)
