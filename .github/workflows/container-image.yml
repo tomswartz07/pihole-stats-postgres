@@ -69,7 +69,7 @@ jobs:
             linux/arm64/v8
           push: true
           tags: |
-            tomswartz07/pihole-postgres:latest
-            tomswartz07/pihole-postgres:${{github.ref_name}}
-            ghcr.io/tomswartz07/pihole-postgres:latest
-            ghcr.io/tomswartz07/pihole-postgres:${{github.ref_name}}
+            tomswartz07/pihole-stats-postgres:latest
+            tomswartz07/pihole-stats-postgres:${{github.ref_name}}
+            ghcr.io/tomswartz07/pihole-stats-postgres:latest
+            ghcr.io/tomswartz07/pihole-stats-postgres:${{github.ref_name}}
