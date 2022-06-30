@@ -8,4 +8,31 @@ updates:
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      time: "08:00"
+      timezone: "America/New_York"
+    assignees:
+      - "tomswartz07"
+    reviewers:
+      - "tomswartz07"
+      - "amayer5125"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      time: "08:00"
+      timezone: "America/New_York"
+    assignees:
+      - "tomswartz07"
+    reviewers:
+      - "tomswartz07"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      time: "08:00"
+      timezone: "America/New_York"
+    assignees:
+      - "tomswartz07"
+    reviewers:
+      - "tomswartz07"
