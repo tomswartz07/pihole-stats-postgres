@@ -1,9 +1,11 @@
 #!/usr/bin/env python
-# pylint: disable=C0301,C0103
+# pylint: disable=broad-except
+# pylint: disable=C0301,C0103,C0209,R0913
 """
 Grab stats from PiHole and put em someplace else
 """
 
+import os
 import json
 from contextlib import closing
 import datetime
@@ -26,6 +28,20 @@ piholehost = "https://hostname.net" # Do not add the API path, just the address 
 sslmode = "require"
 hostname = socket.gethostname()
 
+dbname = os.environ.get('PGDATABASE')
+dbschema = os.environ.get('PGSCHEMA')
+statstable = os.environ.get('PG_PIHOLE_TABLE')
+discretetable = os.environ.get('PG_PIHOLE_DISCREET_TABLE')
+dbhost = os.environ.get('PGHOST')
+dbport = os.environ.get('PGPORT')
+dbuser = os.environ.get('PGUSER')
+dbpassword = os.environ.get('PGPASSWORD')
+sslmode = os.environ.get('PG_SSL_MODE')
+piholehost = os.environ.get('PIHOLE_HOST')
+hostname = os.environ.get('PIHOLE_INSTANCE_NAME')
+dbappname = "PiHole Stats Aggregator"
+
+
 def connect_to_db(db, user, host, password, port, appname, schema, ssl_mode):
     "Handle connecting to db"
     connection = "dbname='%s' user='%s' host='%s' password='%s' port='%s' application_name='%s' options='-csearch_path=%s' sslmode='%s'" % (
@@ -39,6 +55,7 @@ def connect_to_db(db, user, host, password, port, appname, schema, ssl_mode):
         print(e.pgerror)
         return None
 
+
 def commit_sql(conn, sql_statement):
     "Handles committing queries to the db, single transactions"
     try:
@@ -50,6 +67,7 @@ def commit_sql(conn, sql_statement):
     except Exception as e:
         print("Issue detected: ", e)
         return ['remove', 'danger', 'Issue Detected']
+
 
 def simple_get(url):
     """
@@ -67,14 +85,16 @@ def simple_get(url):
         log_error('Error during requests to {0} : {1}'.format(url, str(e)))
         return None
 
+
 def is_good_response(resp):
     """
     Returns True if the response seems to be HTML, False otherwise.
     """
     content_type = resp.headers['Content-Type'].lower()
     return (resp.status_code == 200
-            #and content_type is not None)
+            # and content_type is not None)
             and content_type.find('application/json') > -1)
+
 
 def log_error(e):
     """
@@ -83,6 +103,7 @@ def log_error(e):
     make it do anything.
     """
     print(e)
+
 
 raw_data = simple_get(piholehost + '/admin/api.php')
 
@@ -173,10 +194,10 @@ if discrete_data is not None:
         insert_statement2 += " UPDATE SET"
         insert_statement2 += " domains ="
         insert_statement2 += " EXCLUDED.domains; "
-        #insert_statement2 += " WHERE"
-        #insert_statement2 += " {}.{}.epoch = EXCLUDED.epoch".format(dbschema, discretetable)
-        #insert_statement2 += " AND"
-        #insert_statement2 += " {}.{}.domains != EXCLUDED.domains; ".format(dbschema, discretetable)
+        # insert_statement2 += " WHERE"
+        # insert_statement2 += " {}.{}.epoch = EXCLUDED.epoch".format(dbschema, discretetable)
+        # insert_statement2 += " AND"
+        # insert_statement2 += " {}.{}.domains != EXCLUDED.domains; ".format(dbschema, discretetable)
         rollup_statement += insert_statement2
     for time in ads:
         insert_statement3 = "INSERT INTO {}.{} ".format(dbschema, discretetable)
@@ -191,10 +212,10 @@ if discrete_data is not None:
         insert_statement3 += " UPDATE SET"
         insert_statement3 += " ads ="
         insert_statement3 += " EXCLUDED.ads; "
-        #insert_statement3 += " WHERE"
-        #insert_statement3 += " {}.{}.epoch = EXCLUDED.epoch".format(dbschema, discretetable)
-        #insert_statement3 += " AND"
-        #insert_statement3 += " {}.{}.ads != EXCLUDED.ads; ".format(dbschema, discretetable)
+        # insert_statement3 += " WHERE"
+        # insert_statement3 += " {}.{}.epoch = EXCLUDED.epoch".format(dbschema, discretetable)
+        # insert_statement3 += " AND"
+        # insert_statement3 += " {}.{}.ads != EXCLUDED.ads; ".format(dbschema, discretetable)
         rollup_statement += insert_statement3
     commit_data_statement += rollup_statement
 else:
