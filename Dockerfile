@@ -26,6 +26,9 @@ COPY crontab .
 RUN crontab crontab
 COPY pihole-api.py .
 COPY requirements.txt .
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
