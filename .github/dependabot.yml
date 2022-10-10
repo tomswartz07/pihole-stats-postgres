@@ -15,7 +15,6 @@ updates:
       - "tomswartz07"
     reviewers:
       - "tomswartz07"
-      - "amayer5125"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
