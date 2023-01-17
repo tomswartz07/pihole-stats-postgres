@@ -38,6 +38,7 @@ dbuser = os.environ.get('PGUSER')
 dbpassword = os.environ.get('PGPASSWORD')
 sslmode = os.environ.get('PG_SSL_MODE')
 piholehost = os.environ.get('PIHOLE_HOST')
+pihole_api_token = os.environ.get('PIHOLE_API_TOKEN')
 hostname = os.environ.get('PIHOLE_INSTANCE_NAME')
 dbappname = "PiHole Stats Aggregator"
 
@@ -105,7 +106,7 @@ def log_error(e):
     print(e)
 
 
-raw_data = simple_get(piholehost + '/admin/api.php')
+raw_data = simple_get(piholehost + '/admin/api.php?summaryRaw&auth=' + pihole_api_token)
 
 # Init empty string for single connection/transaction
 commit_data_statement = ""
@@ -175,7 +176,7 @@ if raw_data is not None:
 else:
     print("Bad connection or no data, skipping")
 
-discrete_data = simple_get(piholehost + '/admin/api.php?overTimeData10mins')
+discrete_data = simple_get(piholehost + '/admin/api.php?overTimeData10mins&auth=' + pihole_api_token)
 if discrete_data is not None:
     short_json = json.loads(discrete_data)
     domains = short_json['domains_over_time']
