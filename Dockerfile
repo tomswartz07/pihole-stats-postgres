@@ -1,4 +1,4 @@
-FROM python:3.13.2-alpine
+FROM python:3.13.3-alpine
 LABEL org.opencontainers.image.source=https://github.com/tomswartz07/pihole-stats-postgres
 LABEL org.opencontainers.image.authors="tom+docker@tswartz.net"
 LABEL description="Docker container to ingest PiHole data and store it in a PostgreSQL database."
