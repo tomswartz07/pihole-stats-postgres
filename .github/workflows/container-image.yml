@@ -15,8 +15,6 @@ jobs:
         python-version:
           - '3.x'   # Most Recent 3.x release
           - '3.12'  # EOL 31 Oct 2028
-          - '3.11'  # EOL 31 Oct 2027
-          - '3.10'  # EOL 31 Oct 2026
     name: Python ${{ matrix.python-version }} Testing
     steps:
       - uses: actions/checkout@v6
