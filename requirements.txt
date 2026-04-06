@@ -1,2 +1,2 @@
 psycopg2==2.9.11
-requests==2.33.0
+requests==2.33.1
